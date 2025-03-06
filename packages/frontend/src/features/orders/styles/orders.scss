@@ -1,0 +1,147 @@
+// Orders List Styles
+.orders-list {
+  .sortable {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+    
+    svg {
+      margin-left: 0.5rem;
+      opacity: 0.4;
+    }
+  }
+  
+  .filter-card {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+  }
+}
+
+// Order Detail Styles
+.order-detail {
+  .customer-info, .order-info {
+    margin-bottom: 1.5rem;
+    
+    h6 {
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #e9ecef;
+    }
+  }
+  
+  .order-items {
+    margin-top: 2rem;
+    
+    h6 {
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #e9ecef;
+    }
+  }
+}
+
+// Order Form Styles
+.order-form {
+  .actions {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+  
+  .item-row {
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+  }
+  
+  .add-item-btn {
+    width: 100%;
+    margin-top: 1rem;
+  }
+  
+  .form-section {
+    margin-bottom: 2rem;
+    
+    h6 {
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #e9ecef;
+    }
+  }
+  
+  // Order summary card
+  .order-summary {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    
+    h6 {
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #e9ecef;
+    }
+    
+    .total-row {
+      font-weight: bold;
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid #e9ecef;
+    }
+  }
+}
+
+// Responsive styles
+@media (max-width: 768px) {
+  .orders-list {
+    .table-responsive {
+      font-size: 0.875rem;
+    }
+  }
+  
+  .order-form {
+    .actions {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.5rem;
+    }
+  }
+}
+
+// Dark mode styles
+.dark-mode {
+  .orders-list {
+    .sortable:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    .filter-card {
+      background-color: #2d3748;
+      border-color: #4a5568;
+    }
+  }
+  
+  .order-detail, .order-form {
+    .customer-info h6, .order-info h6, .order-items h6, .form-section h6 {
+      border-bottom-color: #4a5568;
+    }
+    
+    .order-summary {
+      background-color: #2d3748;
+      border-color: #4a5568;
+      
+      .total-row {
+        border-top-color: #4a5568;
+      }
+    }
+  }
+} 

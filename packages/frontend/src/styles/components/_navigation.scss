@@ -1,0 +1,132 @@
+.main-nav {
+  padding: $spacing-md 0;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    padding: $spacing-md $spacing-lg;
+    color: $text-primary;
+    text-decoration: none;
+    transition: $transition-base;
+    border-left: 3px solid transparent;
+    
+    &:hover {
+      background-color: rgba($primary-color, 0.05);
+      color: $primary-color;
+      text-decoration: none;
+    }
+    
+    &.active {
+      background-color: rgba($primary-color, 0.1);
+      color: $primary-color;
+      border-left-color: $primary-color;
+    }
+  }
+
+  &__icon {
+    margin-right: $spacing-md;
+    display: flex;
+    align-items: center;
+    font-size: $font-size-lg;
+  }
+
+  &__label {
+    font-weight: 500;
+  }
+}
+
+.header-search {
+  flex: 1;
+  max-width: 400px;
+  margin: 0 $spacing-xl;
+  
+  input {
+    width: 100%;
+    padding: $spacing-sm $spacing-md;
+    border: 1px solid darken($background-grey, 10%);
+    border-radius: $border-radius-md;
+    background-color: $background-grey;
+    transition: $transition-base;
+    
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+      background-color: $background-light;
+    }
+  }
+}
+
+.header-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.user-dropdown {
+  position: relative;
+  
+  &__toggle {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: $spacing-sm;
+    border-radius: $border-radius-md;
+    
+    &:hover {
+      background-color: rgba($primary-color, 0.05);
+    }
+  }
+  
+  &__menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 200px;
+    background-color: $background-light;
+    border-radius: $border-radius-md;
+    @include box-shadow(2);
+    padding: $spacing-sm 0;
+    z-index: $z-index-dropdown;
+    display: none;
+    
+    .user-dropdown:hover & {
+      display: block;
+    }
+  }
+  
+  &__item {
+    display: block;
+    padding: $spacing-sm $spacing-md;
+    color: $text-primary;
+    text-decoration: none;
+    transition: $transition-base;
+    cursor: pointer;
+    
+    &:hover {
+      background-color: rgba($primary-color, 0.05);
+      color: $primary-color;
+    }
+    
+    svg {
+      margin-right: $spacing-sm;
+    }
+  }
+  
+  &__divider {
+    height: 1px;
+    background-color: darken($background-grey, 5%);
+    margin: $spacing-xs 0;
+  }
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: $primary-color;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: $spacing-sm;
+} 

@@ -1,0 +1,138 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-sm $spacing-lg;
+  border-radius: $border-radius-md;
+  font-weight: 500;
+  font-size: $font-size-md;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: $transition-base;
+  border: none;
+  outline: none;
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  // Size variants
+  &--sm {
+    padding: $spacing-xs $spacing-md;
+    font-size: $font-size-sm;
+  }
+  
+  &--lg {
+    padding: $spacing-md $spacing-xl;
+    font-size: $font-size-lg;
+  }
+  
+  // Button variants
+  &--primary {
+    background-color: $primary-color;
+    color: white;
+    
+    &:hover:not(:disabled) {
+      background-color: darken($primary-color, 10%);
+      color: white;
+      text-decoration: none;
+    }
+  }
+  
+  &--secondary {
+    background-color: $secondary-color;
+    color: white;
+    
+    &:hover:not(:disabled) {
+      background-color: darken($secondary-color, 10%);
+      color: white;
+      text-decoration: none;
+    }
+  }
+  
+  &--outline-primary {
+    background-color: transparent;
+    border: 1px solid $primary-color;
+    color: $primary-color;
+    
+    &:hover:not(:disabled) {
+      background-color: $primary-color;
+      color: white;
+      text-decoration: none;
+    }
+  }
+  
+  &--outline-secondary {
+    background-color: transparent;
+    border: 1px solid $secondary-color;
+    color: $secondary-color;
+    
+    &:hover:not(:disabled) {
+      background-color: $secondary-color;
+      color: white;
+      text-decoration: none;
+    }
+  }
+  
+  &--text {
+    background-color: transparent;
+    color: $primary-color;
+    padding: $spacing-xs $spacing-sm;
+    
+    &:hover:not(:disabled) {
+      background-color: rgba($primary-color, 0.05);
+      text-decoration: none;
+    }
+  }
+  
+  &--success {
+    background-color: $success-color;
+    color: white;
+    
+    &:hover:not(:disabled) {
+      background-color: darken($success-color, 10%);
+      color: white;
+      text-decoration: none;
+    }
+  }
+  
+  &--warning {
+    background-color: $warning-color;
+    color: white;
+    
+    &:hover:not(:disabled) {
+      background-color: darken($warning-color, 10%);
+      color: white;
+      text-decoration: none;
+    }
+  }
+  
+  &--danger {
+    background-color: $error-color;
+    color: white;
+    
+    &:hover:not(:disabled) {
+      background-color: darken($error-color, 10%);
+      color: white;
+      text-decoration: none;
+    }
+  }
+  
+  &--block {
+    display: flex;
+    width: 100%;
+  }
+  
+  // Icon support
+  svg {
+    margin-right: $spacing-xs;
+  }
+  
+  &--icon-only {
+    svg {
+      margin-right: 0;
+    }
+  }
+} 

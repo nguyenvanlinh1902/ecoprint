@@ -1,0 +1,14 @@
+{
+  "firebase": {
+    "databaseURL": "https://ecoprint-28dd2.firebaseio.com",
+    "storageBucket": "ecoprint-28dd2.firebasestorage.app"
+  },
+  "api": {
+    "port": 5001,
+    "host": "localhost"
+  },
+  "cors": {
+    "origin": "http://localhost:3000"
+  },
+  "environment": "development"
+} 

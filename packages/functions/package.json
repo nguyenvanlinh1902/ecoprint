@@ -1,0 +1,39 @@
+{
+  "name": "@b2b/functions",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": "20"
+  },
+  "main": "src/index.js",
+  "dependencies": {
+    "@b2b/shared": "1.0.0",
+    "firebase-admin": "^11.11.0",
+    "firebase-functions": "^4.5.0",
+    "koa": "^2.14.2",
+    "koa-router": "^12.0.1",
+    "koa-bodyparser": "^4.4.1",
+    "koa-cors": "^0.0.16",
+    "joi": "^17.11.0",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4"
+  },
+  "devDependencies": {
+    "firebase-functions-test": "^3.1.0",
+    "eslint": "^8.51.0",
+    "eslint-plugin-node": "^11.1.0",
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.1"
+  },
+  "scripts": {
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log",
+    "serve": "firebase emulators:start --only functions",
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "shell": "firebase functions:shell",
+    "test": "jest",
+    "lint": "eslint src",
+    "setup-local": "node ../scripts/setup-local-env.js"
+  }
+} 

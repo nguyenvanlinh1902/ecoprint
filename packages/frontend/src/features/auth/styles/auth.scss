@@ -1,0 +1,58 @@
+// Phần code CSS hiện có (nếu có)
+
+// Styles cho trang Access Denied
+.access-denied-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--bg-light);
+  padding: 2rem;
+}
+
+.access-denied-container {
+  max-width: 600px;
+  width: 100%;
+  background-color: var(--bg-white);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 3rem 2rem;
+  text-align: center;
+  
+  h1 {
+    color: var(--color-danger);
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  p {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+}
+
+.access-denied-icon {
+  margin-bottom: 2rem;
+  
+  i {
+    font-size: 4rem;
+    color: var(--color-danger);
+    background-color: rgba(var(--color-danger-rgb), 0.1);
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.access-denied-actions {
+  margin-top: 2rem;
+  
+  .btn {
+    padding: 0.75rem 2rem;
+  }
+} 

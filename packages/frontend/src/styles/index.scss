@@ -1,0 +1,27 @@
+// Import base & utils
+@import 'variables';
+@import 'mixins';
+@import 'base';
+@import 'typography';
+
+// Import layout styles
+@import 'layouts/auth';
+@import 'layouts/main';
+@import 'layouts/sidebar';
+
+// Import component styles
+@import 'components/buttons';
+@import 'components/cards';
+@import 'components/forms';
+@import 'components/inputs';
+@import 'components/loader';
+@import 'components/navigation';
+
+// Import feature-specific styles
+// @import 'features/dashboard';
+// @import 'features/products';
+@import '../features/orders/styles/orders';
+
+// Pages
+@import 'pages/auth';
+@import 'pages/dashboard'; 
