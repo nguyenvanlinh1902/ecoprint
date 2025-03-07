@@ -1,0 +1,135 @@
+@use 'variables' as vars;
+
+// Responsive breakpoints
+@mixin xs {
+  @media (max-width: #{vars.$breakpoint-sm - 1px}) {
+    @content;
+  }
+}
+
+@mixin sm {
+  @media (min-width: #{vars.$breakpoint-sm}) and (max-width: #{vars.$breakpoint-md - 1px}) {
+    @content;
+  }
+}
+
+@mixin md {
+  @media (min-width: #{vars.$breakpoint-md}) and (max-width: #{vars.$breakpoint-lg - 1px}) {
+    @content;
+  }
+}
+
+@mixin lg {
+  @media (min-width: #{vars.$breakpoint-lg}) and (max-width: #{vars.$breakpoint-xl - 1px}) {
+    @content;
+  }
+}
+
+@mixin xl {
+  @media (min-width: #{vars.$breakpoint-xl}) {
+    @content;
+  }
+}
+
+// Min-width breakpoints
+@mixin sm-up {
+  @media (min-width: #{vars.$breakpoint-sm}) {
+    @content;
+  }
+}
+
+@mixin md-up {
+  @media (min-width: #{vars.$breakpoint-md}) {
+    @content;
+  }
+}
+
+@mixin lg-up {
+  @media (min-width: #{vars.$breakpoint-lg}) {
+    @content;
+  }
+}
+
+@mixin xl-up {
+  @media (min-width: #{vars.$breakpoint-xl}) {
+    @content;
+  }
+}
+
+// Max-width breakpoints
+@mixin sm-down {
+  @media (max-width: #{vars.$breakpoint-md - 1px}) {
+    @content;
+  }
+}
+
+@mixin md-down {
+  @media (max-width: #{vars.$breakpoint-lg - 1px}) {
+    @content;
+  }
+}
+
+@mixin lg-down {
+  @media (max-width: #{vars.$breakpoint-xl - 1px}) {
+    @content;
+  }
+}
+
+// Flexbox mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+// Typography and text
+@mixin ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@mixin multi-line-ellipsis($lines) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Animation
+@mixin transition($property: all, $duration: 0.3s, $timing: ease) {
+  transition: $property $duration $timing;
+}
+
+// Box shadow
+@mixin box-shadow($level: 1) {
+  @if $level == 1 {
+    box-shadow: vars.$shadow-sm;
+  } @else if $level == 2 {
+    box-shadow: vars.$shadow-md;
+  } @else if $level == 3 {
+    box-shadow: vars.$shadow-lg;
+  } @else if $level == 4 {
+    box-shadow: vars.$shadow-xl;
+  }
+}
+
+// Card style
+@mixin card {
+  background-color: vars.$background-light;
+  border-radius: vars.$border-radius-md;
+  padding: vars.$spacing-lg;
+  @include box-shadow(2);
+} 

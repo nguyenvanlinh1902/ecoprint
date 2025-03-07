@@ -1,0 +1,211 @@
+@use 'sass:color';
+@use '../variables' as vars;
+
+// Button component using BEM methodology
+// Block: button
+// Elements: icon, text
+// Modifiers: primary, secondary, success, danger, large, small, outlined, etc.
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.75;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+  border: none;
+  outline: none;
+  
+  // Elements
+  &__icon {
+    margin-right: 8px;
+    font-size: 18px;
+    
+    &--end {
+      margin-right: 0;
+      margin-left: 8px;
+    }
+  }
+  
+  &__text {
+    display: inline-block;
+  }
+  
+  // Size modifiers
+  &--small {
+    padding: 4px 10px;
+    font-size: 12px;
+    
+    .button__icon {
+      font-size: 16px;
+    }
+  }
+  
+  &--large {
+    padding: 12px 22px;
+    font-size: 16px;
+    
+    .button__icon {
+      font-size: 22px;
+    }
+  }
+  
+  // Color variants
+  &--primary {
+    background-color: vars.$primary-color;
+    color: #fff;
+    
+    &:hover {
+      background-color: color.adjust(vars.$primary-color, $lightness: -10%);
+    }
+    
+    &:active {
+      background-color: color.adjust(vars.$primary-color, $lightness: -15%);
+    }
+  }
+  
+  &--secondary {
+    background-color: vars.$secondary-color;
+    color: #fff;
+    
+    &:hover {
+      background-color: color.adjust(vars.$secondary-color, $lightness: -10%);
+    }
+    
+    &:active {
+      background-color: color.adjust(vars.$secondary-color, $lightness: -15%);
+    }
+  }
+  
+  &--success {
+    background-color: vars.$success-color;
+    color: #fff;
+    
+    &:hover {
+      background-color: color.adjust(vars.$success-color, $lightness: -10%);
+    }
+    
+    &:active {
+      background-color: color.adjust(vars.$success-color, $lightness: -15%);
+    }
+  }
+  
+  &--error {
+    background-color: vars.$error-color;
+    color: #fff;
+    
+    &:hover {
+      background-color: color.adjust(vars.$error-color, $lightness: -10%);
+    }
+    
+    &:active {
+      background-color: color.adjust(vars.$error-color, $lightness: -15%);
+    }
+  }
+  
+  // Style variants
+  &--outlined {
+    background-color: transparent;
+    border: 1px solid currentColor;
+    
+    &.button--primary {
+      color: vars.$primary-color;
+      
+      &:hover {
+        background-color: color.adjust(vars.$primary-color, $alpha: -0.9);
+      }
+    }
+    
+    &.button--secondary {
+      color: vars.$secondary-color;
+      
+      &:hover {
+        background-color: color.adjust(vars.$secondary-color, $alpha: -0.9);
+      }
+    }
+    
+    &.button--success {
+      color: vars.$success-color;
+      
+      &:hover {
+        background-color: color.adjust(vars.$success-color, $alpha: -0.9);
+      }
+    }
+    
+    &.button--error {
+      color: vars.$error-color;
+      
+      &:hover {
+        background-color: color.adjust(vars.$error-color, $alpha: -0.9);
+      }
+    }
+  }
+  
+  &--text {
+    background-color: transparent;
+    padding: 4px 8px;
+    
+    &.button--primary {
+      color: vars.$primary-color;
+      
+      &:hover {
+        background-color: color.adjust(vars.$primary-color, $alpha: -0.9);
+      }
+    }
+    
+    &.button--secondary {
+      color: vars.$secondary-color;
+      
+      &:hover {
+        background-color: color.adjust(vars.$secondary-color, $alpha: -0.9);
+      }
+    }
+  }
+  
+  // State modifiers
+  &--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  
+  &--full-width {
+    width: 100%;
+  }
+  
+  &--loading {
+    position: relative;
+    pointer-events: none;
+    
+    .button__text, .button__icon {
+      visibility: hidden;
+    }
+    
+    &::after {
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      top: 50%;
+      left: 50%;
+      margin-top: -8px;
+      margin-left: -8px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      border-top-color: #fff;
+      animation: button-spinner 0.6s linear infinite;
+    }
+  }
+}
+
+@keyframes button-spinner {
+  to {
+    transform: rotate(360deg);
+  }
+} 

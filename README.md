@@ -7,9 +7,8 @@ Hệ thống quản lý B2B E-commerce được xây dựng theo mô hình Monor
 ```
 B2BManager/
 ├── packages/               # Thư mục chứa các package 
-│   ├── frontend/           # Ứng dụng ReactJS
-│   ├── backend/            # API Koa.js 
-│   └── shared/             # Thư viện dùng chung
+│   ├── assets/             # Ứng dụng ReactJS
+│   └── functions/          # API Koa.js 
 ├── package.json            # Root package.json
 ├── .eslintrc.js            # ESLint config chung
 ├── .prettierrc             # Prettier config chung
@@ -19,9 +18,8 @@ B2BManager/
 
 ## Công nghệ sử dụng
 
-- **Frontend**: ReactJS, Redux Toolkit, Styled Components
-- **Backend**: Koa.js, MongoDB, JWT Authentication
-- **Shared**: TypeScript, Utilities, Types
+- **Assets**: ReactJS, Material UI,
+- **Functions**: Koa.js, Firebase, JWT Authentication
 - **DevOps**: Yarn Workspaces, ESLint, Prettier
 
 ## Cài đặt
@@ -38,14 +36,14 @@ yarn install
 
 3. Khởi chạy ứng dụng trong chế độ development
 ```bash
-# Chạy cả frontend và backend
+# Chạy cả assets và functions
 yarn dev
 
-# Chạy riêng frontend
-yarn frontend:dev
+# Chạy riêng assets
+yarn assets:dev
 
-# Chạy riêng backend
-yarn backend:dev
+# Chạy riêng functions
+yarn functions:dev
 ```
 
 ## Hướng dẫn phát triển
@@ -69,10 +67,10 @@ yarn backend:dev
   - Tests: `ProductList.test.js`
   - Styles: `product-list.scss`
 
-### Cấu trúc thư mục Frontend
+### Cấu trúc thư mục Assets
 
 ```
-frontend/
+assets/
 ├── src/
 │   ├── components/             # Shared components
 │   │   ├── common/

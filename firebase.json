@@ -1,1 +1,17 @@
- 
+{
+  "functions": {
+    "source": "packages/functions",
+    "predeploy": [
+      "yarn lint packages/functions"
+    ]
+  },
+  "emulators": {
+    "functions": {
+      "port": 5001
+    },
+    "ui": {
+      "enabled": true,
+      "port": 4000
+    }
+  }
+} 

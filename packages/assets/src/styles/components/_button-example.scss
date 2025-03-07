@@ -1,0 +1,79 @@
+@use 'sass:color';
+@use '../variables' as vars;
+
+// Button example component using BEM methodology
+.button-example {
+  // Block styles
+  width: 100%;
+  border-radius: vars.$border-radius-lg;
+  background-color: vars.$background-light;
+  
+  // Elements
+  &__heading {
+    color: vars.$text-primary;
+    margin-bottom: vars.$spacing-lg;
+  }
+  
+  &__section {
+    margin-bottom: vars.$spacing-xl;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  
+  &__title {
+    color: vars.$text-secondary;
+    font-weight: 500;
+    margin-bottom: vars.$spacing-md;
+  }
+  
+  &__description {
+    color: vars.$text-hint;
+    margin-bottom: vars.$spacing-lg;
+  }
+  
+  // Modifiers
+  &--dark {
+    background-color: vars.$background-dark;
+    
+    .button-example__heading {
+      color: vars.$background-light;
+    }
+    
+    .button-example__title {
+      color: color.adjust(vars.$background-light, $lightness: -10%);
+    }
+    
+    .button-example__description {
+      color: color.adjust(vars.$background-light, $lightness: -20%);
+    }
+  }
+  
+  &--bordered {
+    border: 1px solid vars.$border-color;
+  }
+  
+  // Layout modifiers
+  &--compact {
+    padding: vars.$spacing-md;
+    
+    .button-example__section {
+      margin-bottom: vars.$spacing-md;
+    }
+  }
+  
+  // Responsive modifiers
+  @media (max-width: vars.$breakpoint-md) {
+    .button {
+      min-width: 120px;
+    }
+  }
+  
+  @media (max-width: vars.$breakpoint-sm) {
+    .button {
+      width: 100%;
+      margin-bottom: vars.$spacing-sm;
+    }
+  }
+} 

@@ -6,13 +6,14 @@
     "packages/*"
   ],
   "scripts": {
-    "frontend:dev": "yarn workspace @b2b/frontend dev",
-    "frontend:build": "yarn workspace @b2b/frontend build",
+    "assets:dev": "yarn workspace @b2b/assets dev",
+    "assets:build": "yarn workspace @b2b/assets build",
     "functions:dev": "yarn workspace @b2b/functions dev",
     "functions:deploy": "yarn workspace @b2b/functions deploy",
-    "shared:build": "yarn workspace @b2b/shared build",
-    "dev": "concurrently \"yarn frontend:dev\" \"yarn functions:dev\"",
-    "build": "yarn shared:build && yarn frontend:build",
+    "functions:emulator": "yarn workspace @b2b/functions serve",
+    "dev": "concurrently \"yarn assets:dev\" \"yarn functions:dev\"",
+    "dev:emulator": "concurrently \"yarn assets:dev\" \"yarn functions:emulator\"",
+    "build": "yarn assets:build",
     "deploy": "yarn build && yarn functions:deploy",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""

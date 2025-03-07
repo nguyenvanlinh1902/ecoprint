@@ -1,0 +1,244 @@
+// Hardcoded colors and sizes
+.profile-page {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  
+  .profile-header {
+    margin-bottom: 24px;
+    
+    h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+      color: #333;
+    }
+    
+    p {
+      color: #757575;
+      font-size: 16px;
+    }
+  }
+  
+  .alert {
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    
+    &.alert-success {
+      background-color: rgba(76, 175, 80, 0.1);
+      color: #3d8b40;
+      border: 1px solid rgba(76, 175, 80, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    &.alert-danger {
+      background-color: rgba(244, 67, 54, 0.1);
+      color: #e53935;
+      border: 1px solid rgba(244, 67, 54, 0.3);
+      
+      svg {
+        margin-right: 0.5rem;
+      }
+    }
+  }
+  
+  .profile-avatar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 32px;
+  }
+  
+  .profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    position: relative;
+    margin-bottom: 12px;
+    overflow: hidden;
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .avatar-placeholder {
+      width: 100%;
+      height: 100%;
+      background-color: #b6cef2;
+      color: #0d47a1;
+      font-size: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .avatar-upload {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      background-color: #0d47a1;
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      
+      &:hover {
+        background-color: #09326f;
+      }
+    }
+  }
+  
+  .avatar-help {
+    font-size: 14px;
+    color: #757575;
+  }
+  
+  .profile-form {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    padding: 24px;
+  }
+  
+  .form-row {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 24px;
+    
+    @media (max-width: 768px) {
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .form-group {
+      flex: 1;
+    }
+  }
+  
+  .form-group {
+    margin-bottom: 16px;
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #333;
+    }
+    
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      font-size: 16px;
+      transition: border-color 0.2s;
+      
+      &:focus {
+        border-color: #0d47a1;
+        outline: none;
+      }
+      
+      &.disabled {
+        background-color: #f9f9f9;
+        cursor: not-allowed;
+      }
+    }
+    
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    
+    small {
+      display: block;
+      margin-top: 4px;
+      color: #757575;
+      font-size: 12px;
+    }
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
+    
+    .btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      font-size: 16px;
+      
+      svg {
+        font-size: 18px;
+      }
+    }
+  }
+}
+
+// Spinner animation
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.spinner-icon {
+  animation: spin 1s linear infinite;
+  margin-right: 0.5rem;
+}
+
+.avatar-section {
+  flex: 0 0 200px;
+  
+  .avatar-container {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 1rem;
+    border: 1px solid #e0e0e0;
+    background-color: #f9f9f9;
+    
+    .avatar-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+      
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
+    
+    .avatar-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #b6cef2;
+      color: #0d47a1;
+      font-size: 4rem;
+    }
+    
+    .avatar-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      padding: 0.5rem;
+    }
+  }
+} 

@@ -1,0 +1,31 @@
+// Import Sass utilities
+@use 'sass:color';
+
+// Forward base & utils for use throughout the application
+@use 'variables' as vars;
+@use 'mixins' as mix;
+@use 'base';
+@use 'typography';
+
+// Import layout styles
+@use 'layouts/auth' as auth_layout;
+@use 'layouts/main';
+@use 'layouts/sidebar';
+
+// Import component styles
+@use 'components/button';
+@use 'components/button-example';
+@use 'components/cards';
+@use 'components/forms';
+@use 'components/inputs';
+@use 'components/loader';
+@use 'components/navigation';
+
+// Import feature-specific styles
+// @use 'features/dashboard';
+// @use 'features/products';
+@use '../features/orders/styles/orders';
+
+// Pages
+@use 'pages/auth' as auth_pages;
+@use 'pages/dashboard'; 
