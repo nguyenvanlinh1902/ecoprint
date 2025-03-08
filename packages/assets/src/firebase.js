@@ -2,7 +2,9 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
-// Firebase configuration
+/**
+ * Firebase configuration from environment variables
+ */
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -14,13 +16,18 @@ const firebaseConfig = {
 
 console.log('Firebase Config:', { ...firebaseConfig, apiKey: 'HIDDEN' });
 
-// Initialize Firebase
+// Initialize Firebase app
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+
+// Firebase services
+export const auth = getAuth(app);
+export const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
-// Google Auth
+/**
+ * Signs in user with Google authentication
+ * @returns {Promise<Object>} Authentication result
+ */
 export const signInWithGoogle = async () => {
   try {
     const result = await signInWithPopup(auth, googleProvider);
@@ -37,14 +44,23 @@ export const signInWithGoogle = async () => {
   }
 };
 
-// Get current authenticated user
+/**
+ * Returns current authenticated user
+ * @returns {Object|null} Current user or null
+ */
 export const getCurrentUser = () => {
   return auth.currentUser;
 };
 
-// Check if a user is an admin
+/**
+ * Checks if email belongs to an admin user
+ * @param {string} email - User email to check
+ * @returns {boolean} True if admin
+ */
 export const isAdminEmail = (email) => {
-  return email === 'linhnguyenvan1902@gmail.com';
-};
-
-export { auth, db }; 
+  const adminEmails = [
+    'linhnguyenvan1902@gmail.com',
+    'admin@ecoprint.com'
+  ];
+  return adminEmails.includes(email);
+}; 

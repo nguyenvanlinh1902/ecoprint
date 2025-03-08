@@ -16,6 +16,7 @@ import {
   Home as HomeIcon, 
   ShoppingCart as CartIcon, 
   Person as PersonIcon,
+  Store as ShopIcon,
   Logout as LogoutIcon 
 } from '@mui/icons-material';
 
@@ -26,10 +27,13 @@ const Dashboard = () => {
     navigate('/login');
   };
   
+  const handleCardClick = (path) => {
+    navigate(path);
+  };
+
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Grid container spacing={3}>
-        {/* Header */}
         <Grid item xs={12}>
           <Paper 
             sx={{ 
@@ -71,33 +75,72 @@ const Dashboard = () => {
             
             <Grid container spacing={3} sx={{ mt: 1 }}>
               <Grid item xs={12} sm={6} md={4}>
-                <Card>
-                  <CardHeader title="My Orders" />
+                <Card 
+                  sx={{ 
+                    cursor: 'pointer',
+                    transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+                    '&:hover': {
+                      transform: 'translateY(-5px)',
+                      boxShadow: 4
+                    }
+                  }}
+                  onClick={() => handleCardClick('/dashboard/orders')}
+                >
+                  <CardHeader 
+                    avatar={<CartIcon color="primary" fontSize="large" />}
+                    title="My Orders" 
+                  />
                   <CardContent>
                     <Typography variant="body2" color="text.secondary">
-                      View and manage your orders
+                      View and manage all your orders and track deliveries
                     </Typography>
                   </CardContent>
                 </Card>
               </Grid>
               
               <Grid item xs={12} sm={6} md={4}>
-                <Card>
-                  <CardHeader title="My Profile" />
+                <Card 
+                  sx={{ 
+                    cursor: 'pointer',
+                    transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+                    '&:hover': {
+                      transform: 'translateY(-5px)',
+                      boxShadow: 4
+                    }
+                  }}
+                  onClick={() => handleCardClick('/dashboard/profile')}
+                >
+                  <CardHeader 
+                    avatar={<PersonIcon color="primary" fontSize="large" />}
+                    title="My Profile" 
+                  />
                   <CardContent>
                     <Typography variant="body2" color="text.secondary">
-                      Update your personal information
+                      Update your personal information and preferences
                     </Typography>
                   </CardContent>
                 </Card>
               </Grid>
               
               <Grid item xs={12} sm={6} md={4}>
-                <Card>
-                  <CardHeader title="Shop Now" />
+                <Card 
+                  sx={{ 
+                    cursor: 'pointer',
+                    transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+                    '&:hover': {
+                      transform: 'translateY(-5px)',
+                      boxShadow: 4
+                    }
+                  }}
+                  onClick={() => handleCardClick('/products')}
+                >
+                  <CardHeader 
+                    avatar={<CartIcon color="primary" fontSize="large" />}
+                    title="Shop Now" 
+                  />
                   <CardContent>
                     <Typography variant="body2" color="text.secondary">
-                      Browse products and make purchases
+                      Browse our products and make new purchases
                     </Typography>
                   </CardContent>
                 </Card>

@@ -1,29 +1,27 @@
 /**
- * Create a route configuration object
- * @param {string} path - The route path
- * @param {React.Component} component - The component to render
- * @param {boolean} exact - If the path should match exactly
- * @param {string[]} roles - Array of roles allowed to access this route
+ * Creates a route configuration object
+ * @param {string} path - Route path
+ * @param {React.Component} element - Component to render
+ * @param {string[]} roles - Roles allowed to access this route
+ * @param {boolean} exact - Whether path should match exactly
  * @returns {Object} Route configuration
  */
-export const createRoute = (path, component, exact = true, roles = ['user', 'admin']) => ({
+export const createRoute = (path, element, roles = ['user', 'admin'], exact = true) => ({
   path,
-  element: component,
-  exact,
+  element,
   roles,
+  exact,
 });
 
 /**
- * Filter routes based on user role
- * @param {Array} routes - Array of route objects
+ * Filters routes based on user role
+ * @param {Array} routes - Route objects
  * @param {string} role - User role
  * @returns {Array} Filtered routes
  */
 export const filterRoutesByRole = (routes, role) => {
   return routes.filter(route => {
-    if (route.roles && !route.roles.includes(role)) {
-      return false;
-    }
-    return true;
+    // Allow routes with no roles specified or routes that include current role
+    return !route.roles || route.roles.includes(role);
   });
 }; 

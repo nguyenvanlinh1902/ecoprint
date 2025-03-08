@@ -1,3 +1,6 @@
+/**
+ * Route module exports
+ */
 export { default } from './routes';
 export { default as adminRoutes } from './adminRoutes';
 export { default as authRoutes } from './authRoutes';

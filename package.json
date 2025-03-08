@@ -10,8 +10,10 @@
     "assets:build": "yarn workspace @b2b/assets build && cp -R packages/assets/public/* packages/assets/dist/",
     "functions:dev": "yarn workspace @b2b/functions dev",
     "functions:deploy": "yarn workspace @b2b/functions deploy",
-    "functions:emulator": "yarn workspace @b2b/functions serve",
-    "dev": "concurrently \"yarn assets:dev\" \"yarn functions:dev\"",
+    "functions:emulator": "yarn workspace @b2b/functions emulator",
+    "dev": "yarn assets:dev",
+    "emulator": "yarn functions:emulator",
+    "dev:all": "concurrently \"yarn assets:dev\" \"yarn functions:dev\"",
     "dev:emulator": "concurrently \"yarn assets:dev\" \"yarn functions:emulator\"",
     "build": "yarn assets:build",
     "deploy": "yarn build && firebase deploy",
@@ -27,7 +29,11 @@
     "eslint-plugin-import": "^2.28.1",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "prettier": "^3.0.3",
-    "firebase-tools": "^12.8.0"
+    "firebase-tools": "^12.8.0",
+    "prettier": "^3.0.3"
+  },
+  "dependencies": {
+    "helmet": "^8.0.0",
+    "koa-helmet": "^8.0.1"
   }
-} 
+}

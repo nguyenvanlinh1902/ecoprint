@@ -1,18 +1,21 @@
+// Import module-alias để đăng ký các alias path
+import './module-alias.js';
+
 import * as functions from 'firebase-functions';
 import admin from 'firebase-admin';
 import Koa from 'koa';
 import Router from 'koa-router';
 import bodyParser from 'koa-bodyparser';
-import cors from 'koa-cors';
+import cors from '@koa/cors';
+import helmet from 'koa-helmet';
+import logger from 'koa-logger';
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
 import fs from 'fs';
-
-// Import route handlers
+import dotenv from 'dotenv';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
-import adminRoutes from './routes/admin.js';
-import userManagementRoutes from './routes/userManagement.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 // Get current directory
 const __filename = fileURLToPath(import.meta.url);
@@ -22,27 +25,42 @@ const __dirname = dirname(__filename);
 const serviceAccountPath = resolve(__dirname, '../serviceAccount.json');
 const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
 
+// Initialize dotenv
+dotenv.config();
+
 // Initialize Firebase Admin SDK
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
-// Create Koa app
+// App constants
+const PORT = process.env.PORT || 5001;
+const API_PREFIX = '/api';
+
+// Initialize Koa app
 const app = new Koa();
-const router = new Router();
+const router = new Router({
+  prefix: API_PREFIX
+});
 
 // Middleware
-app.use(bodyParser());
-
-// Cấu hình CORS chi tiết hơn
+app.use(logger());
 app.use(cors({
   origin: '*',
   credentials: true,
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowHeaders: ['Authorization', 'Content-Type']
+  allowHeaders: ['Authorization', 'Content-Type', 'Accept'],
+  exposeHeaders: ['Content-Length', 'Date', 'X-Request-Id']
+}));
+app.use(helmet());
+app.use(bodyParser({
+  enableTypes: ['json', 'form', 'text'],
+  onerror: (err, ctx) => {
+    ctx.throw(422, 'body parse error');
+  }
 }));
 
-// Force JSON Content-Type middleware
+// Ensure JSON content type for all API responses
 app.use(async (ctx, next) => {
   ctx.set('Content-Type', 'application/json');
   await next();
@@ -53,6 +71,7 @@ app.use(async (ctx, next) => {
   try {
     await next();
   } catch (err) {
+    console.error('Server error:', err);
     ctx.status = err.status || 500;
     ctx.body = {
       success: false,
@@ -63,46 +82,72 @@ app.use(async (ctx, next) => {
   }
 });
 
-// Authentication middleware
-const requireAuth = async (ctx, next) => {
+// Auth middleware
+app.use(async (ctx, next) => {
   try {
-    const authorization = ctx.headers.authorization;
-    if (!authorization || !authorization.startsWith('Bearer ')) {
-      ctx.throw(401, 'Unauthorized: No token provided');
-    }
-
-    const token = authorization.split('Bearer ')[1];
-    try {
+    // Get token from header
+    const authHeader = ctx.request.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.substring(7);
+      
+      // Verify token
       const decodedToken = await admin.auth().verifyIdToken(token);
       ctx.state.user = decodedToken;
-      await next();
-    } catch (error) {
-      ctx.throw(401, 'Unauthorized: Invalid token');
     }
+    
+    await next();
   } catch (error) {
-    ctx.throw(error.status || 500, error.message);
+    // Allow the request to proceed even without valid auth
+    // Protected routes will check ctx.state.user
+    await next();
   }
+});
+
+// Authentication middleware
+const requireAuth = async (ctx, next) => {
+  // Để dễ dàng phát triển và test, cho phép access khi trong môi trường development
+  if (process.env.NODE_ENV === 'development') {
+    // Mô phỏng người dùng có role admin trong development
+    if (!ctx.state.user) {
+      ctx.state.user = { 
+        uid: 'dev-user-id',
+        email: 'dev@example.com',
+        role: 'admin',
+        name: 'Development User'
+      };
+    }
+    await next();
+    return;
+  }
+
+  // Kiểm tra xác thực trong môi trường production
+  if (!ctx.state.user) {
+    ctx.status = 401;
+    ctx.body = { success: false, message: 'Unauthorized access' };
+    return;
+  }
+  await next();
 };
 
 // Admin authentication middleware
 const requireAdmin = async (ctx, next) => {
-  try {
-    // First verify they're authenticated
-    await requireAuth(ctx, async () => {});
-
-    // Get user record
-    const user = ctx.state.user;
-    
-    // Check if user has admin custom claim
-    // Or check if email is linhnguyenvan1902@gmail.com (as specified in requirements)
-    if (user.admin === true || user.email === 'linhnguyenvan1902@gmail.com') {
-      await next();
-    } else {
-      ctx.throw(403, 'Forbidden: Admin access required');
+  // Cho phép access admin trong môi trường development
+  if (process.env.NODE_ENV === 'development') {
+    // Đảm bảo user có role admin
+    if (ctx.state.user && !ctx.state.user.role) {
+      ctx.state.user.role = 'admin';
     }
-  } catch (error) {
-    ctx.throw(error.status || 500, error.message);
+    await next();
+    return;
   }
+
+  // Kiểm tra quyền admin trong môi trường production
+  if (!ctx.state.user || ctx.state.user.role !== 'admin') {
+    ctx.status = 403;
+    ctx.body = { success: false, message: 'Admin access required' };
+    return;
+  }
+  await next();
 };
 
 // Root route
@@ -117,15 +162,40 @@ router.get('/', (ctx) => {
 // Register routes
 router.use('/auth', authRoutes.routes(), authRoutes.allowedMethods());
 router.use('/user', requireAuth, userRoutes.routes(), userRoutes.allowedMethods());
-router.use('/admin', requireAdmin, adminRoutes.routes(), adminRoutes.allowedMethods());
-router.use('/api/users', userManagementRoutes.routes(), userManagementRoutes.allowedMethods());
+router.use('/admin', requireAuth, requireAdmin, adminRoutes.routes(), adminRoutes.allowedMethods());
 
-// Apply routes to app
+// Add a basic health check route
+router.get('/health', (ctx) => {
+  ctx.body = { status: 'ok', timestamp: new Date().toISOString() };
+});
+
+// Use router middleware
 app.use(router.routes());
 app.use(router.allowedMethods());
 
-// Export the API as a Firebase Function
-export const api = functions.https.onRequest(app.callback());
+// Debugging log for routes
+console.log('Registered Routes:');
+router.stack.forEach(route => {
+  console.log(`${route.methods.join(',')} ${route.path}`);
+});
+
+// Export the API as a Firebase Function with appropriate configuration
+export const api = functions.https.onRequest((req, res) => {
+  // Set default headers for CORS and content type
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.set('Access-Control-Allow-Headers', 'Authorization, Content-Type, Accept');
+  
+  // Handle OPTIONS requests for CORS preflight
+  if (req.method === 'OPTIONS') {
+    res.set('Access-Control-Max-Age', '3600');
+    res.status(204).send('');
+    return;
+  }
+  
+  // Handle actual request with Koa
+  return app.callback()(req, res);
+});
 
 // Export user management functions
 export const createUserAccount = functions.auth.user().onCreate(async (user) => {
@@ -162,29 +232,15 @@ export const deleteUserData = functions.auth.user().onDelete(async (user) => {
   }
 });
 
-// Start the server directly when in development mode
-// This allows the server to be run without Firebase emulator
-if (process.env.NODE_ENV !== 'production') {
-  // Get port from environment variable or use default (5001)
+// Phát triển địa phương - chỉ bắt đầu máy chủ khi không trong sản xuất
+// và khi tệp được chạy trực tiếp (không thông qua yêu cầu của Firebase)
+if (process.env.NODE_ENV !== 'production' && import.meta.url.endsWith(process.argv[1])) {
   const PORT = process.env.PORT || 5001;
   
-  // Start server and handle potential errors
-  const server = app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  }).on('error', (err) => {
-    if (err.code === 'EADDRINUSE') {
-      console.error(`Port ${PORT} is already in use. API server will not start.`);
-      console.log('Please use Firebase Emulator to access the API or change PORT environment variable.');
-    } else {
-      console.error('Failed to start server:', err);
-    }
-  });
-  
-  // Graceful shutdown
-  process.on('SIGTERM', () => {
-    console.log('SIGTERM received, shutting down server...');
-    server.close(() => {
-      console.log('Server closed.');
-    });
+  // Start server
+  app.listen(PORT, () => {
+    console.log(`Development server running at http://localhost:${PORT}`);
+    console.log(`API base URL: http://localhost:${PORT}${API_PREFIX}`);
+    console.log(`Health check: http://localhost:${PORT}${API_PREFIX}/health`);
   });
 } 

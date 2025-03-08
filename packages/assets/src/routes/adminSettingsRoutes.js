@@ -1,13 +1,14 @@
 import React from 'react';
-import { Route } from 'react-router-dom';
+import Settings from '../pages/admin/Settings';
 
-// Placeholder component
-const AdminSettings = () => <div>Admin Settings Component</div>;
-
+/**
+ * Admin settings routes configuration
+ */
 const adminSettingsRoutes = [
   {
     path: "/admin/settings",
-    element: <AdminSettings />,
+    element: <Settings />,
+    roles: ['admin', 'user'],
     exact: true,
   },
 ];

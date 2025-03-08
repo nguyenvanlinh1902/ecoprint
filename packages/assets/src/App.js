@@ -1,33 +1,15 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { useRoutes } from 'react-router-dom';
 import getRoutes from './routes';
 
+/**
+ * Main application component
+ */
 const App = () => {
-  // For testing purposes, always set role to admin
-  const userRole = 'admin';
+  const userRole = 'admin'; // Default role for development
+  const routes = getRoutes(userRole);
   
-  // Get allowed routes based on user role
-  const allowedRoutes = getRoutes(userRole);
-  
-  return (
-    <Routes>
-      {/* Redirect root to login */}
-      <Route path="/" element={<Navigate to="/login" />} />
-      
-      {/* Map all allowed routes */}
-      {allowedRoutes.map((route, index) => (
-        <Route
-          key={index}
-          path={route.path}
-          element={route.element}
-          exact={route.exact}
-        />
-      ))}
-      
-      {/* Fallback route */}
-      <Route path="*" element={<Navigate to="/login" />} />
-    </Routes>
-  );
+  return useRoutes(routes);
 };
 
 export default App;

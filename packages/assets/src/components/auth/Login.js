@@ -19,7 +19,7 @@ import {
   LockOutlined as LockOutlinedIcon,
   Google as GoogleIcon 
 } from '@mui/icons-material';
-import { useAuth } from '../../hooks';
+import { useAuth } from '../../hooks/api';
 
 const Login = () => {
   const navigate = useNavigate();

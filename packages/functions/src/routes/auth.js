@@ -28,7 +28,6 @@ const googleAuthSchema = Joi.object({
  */
 router.post('/register', async (ctx) => {
   try {
-    // Validate request
     const { error, value } = registerSchema.validate(ctx.request.body);
     if (error) {
       ctx.status = 400;

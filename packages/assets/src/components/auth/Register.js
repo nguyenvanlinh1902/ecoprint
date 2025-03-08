@@ -17,7 +17,7 @@ import {
   PersonAdd as PersonAddIcon,
   Google as GoogleIcon
 } from '@mui/icons-material';
-import { useAuth } from '../../hooks';
+import { useAuth } from '../../hooks/api';
 
 const Register = () => {
   const navigate = useNavigate();
