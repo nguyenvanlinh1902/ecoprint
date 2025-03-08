@@ -75,13 +75,7 @@ assets/
 │   ├── components/             # Shared components
 │   │   ├── common/
 │   │   └── layout/
-│   ├── features/               # Các tính năng chính
-│   │   ├── orders/
-│   │   ├── shipments/
-│   │   ├── catalog/
-│   │   ├── billing/
-│   │   ├── affiliates/
-│   │   └── logistics/
+        pages/
 │   ├── hooks/                  # Custom hooks
 │   ├── services/               # API services
 │   ├── utils/                  # Helper functions

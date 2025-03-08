@@ -1,17 +1,16 @@
 {
-  "functions": {
-    "source": "packages/functions",
-    "predeploy": [
-      "yarn lint packages/functions"
+  "hosting": {
+    "public": "packages/assets/dist",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
     ]
-  },
-  "emulators": {
-    "functions": {
-      "port": 5001
-    },
-    "ui": {
-      "enabled": true,
-      "port": 4000
-    }
   }
-} 
+}
