@@ -3,50 +3,41 @@ import { useNavigate, Link } from 'react-router-dom';
 import {
   Box,
   Button,
-  TextField,
   Typography,
   Paper,
   Container,
   Avatar,
-  FormControlLabel,
-  Checkbox,
-  Grid,
-  Alert
+  Alert,
+  CircularProgress
 } from '@mui/material';
-import { AdminPanelSettings as AdminIcon } from '@mui/icons-material';
+import { 
+  AdminPanelSettings as AdminIcon,
+  Google as GoogleIcon 
+} from '@mui/icons-material';
+import { useAuth } from '../../hooks';
 
 const AdminLogin = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    rememberMe: false
-  });
   const [error, setError] = useState('');
+  const { loginWithGoogle, isAdmin, loading } = useAuth();
 
-  const handleChange = (e) => {
-    const { name, value, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === 'rememberMe' ? checked : value
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleGoogleSignIn = async () => {
+    setError('');
     
-    // Simple validation
-    if (!formData.email || !formData.password) {
-      setError('Please fill in all fields');
-      return;
-    }
-
-    // In a real app, you would validate credentials against a backend
-    // For this demo, just check if it's an admin email pattern
-    if (formData.email.includes('@admin.com') && formData.password === 'admin') {
-      navigate('/admin/dashboard');
-    } else {
-      setError('Invalid admin credentials. Try email: admin@admin.com, password: admin');
+    try {
+      const userData = await loginWithGoogle();
+      
+      if (userData.role === 'admin') {
+        // Admin đăng nhập thành công
+        console.log('Admin login successful:', userData.email);
+        navigate('/admin/dashboard');
+      } else {
+        // Không phải admin
+        setError('You are not authorized as an admin. Only approved admin emails can access this area.');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('An error occurred during authentication. Please try again.');
     }
   };
 
@@ -68,78 +59,39 @@ const AdminLogin = () => {
             <Typography component="h1" variant="h5" color="error.main" fontWeight="bold">
               Admin Login
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 2 }}>
-              Restricted access. Administrators only.
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 2, textAlign: 'center' }}>
+              Restricted access. Only authorized admin emails can sign in.
+              <br />
+              Currently authorized: linhnguyenvan1902@gmail.com
             </Typography>
           </Box>
 
           {error && (
-            <Alert severity="error" sx={{ mt: 2 }}>
+            <Alert severity="error" sx={{ mt: 2, mb: 2 }}>
               {error}
             </Alert>
           )}
 
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Admin Email"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              value={formData.email}
-              onChange={handleChange}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              value={formData.password}
-              onChange={handleChange}
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="rememberMe"
-                  checked={formData.rememberMe}
-                  onChange={handleChange}
-                  color="primary"
-                />
-              }
-              label="Remember me"
-            />
+          <Box sx={{ mt: 3 }}>
             <Button
-              type="submit"
               fullWidth
               variant="contained"
               color="error"
-              sx={{ mt: 3, mb: 2 }}
+              startIcon={loading ? <CircularProgress size={24} color="inherit" /> : <GoogleIcon />}
+              onClick={handleGoogleSignIn}
+              disabled={loading}
+              sx={{ py: 1.5 }}
             >
-              Admin Sign In
+              {loading ? 'Authenticating...' : 'Sign in with Google'}
             </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link to="#" style={{ textDecoration: 'none' }}>
-                  <Typography variant="body2" color="primary">
-                    Forgot password?
-                  </Typography>
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link to="/login" style={{ textDecoration: 'none' }}>
-                  <Typography variant="body2" color="primary">
-                    Customer Login
-                  </Typography>
-                </Link>
-              </Grid>
-            </Grid>
+            
+            <Box sx={{ mt: 3, textAlign: 'center' }}>
+              <Link to="/login" style={{ textDecoration: 'none' }}>
+                <Typography variant="body2" color="primary">
+                  Back to Customer Login
+                </Typography>
+              </Link>
+            </Box>
           </Box>
         </Paper>
       </Box>

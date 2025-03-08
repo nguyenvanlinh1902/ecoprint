@@ -11,12 +11,20 @@ import {
   FormControlLabel,
   Checkbox,
   Grid,
-  Alert
+  Alert,
+  Divider,
+  CircularProgress
 } from '@mui/material';
-import { LockOutlined as LockOutlinedIcon } from '@mui/icons-material';
+import { 
+  LockOutlined as LockOutlinedIcon,
+  Google as GoogleIcon 
+} from '@mui/icons-material';
+import { useAuth } from '../../hooks';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login, loginWithGoogle, loading, error: authError } = useAuth();
+  
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -32,8 +40,9 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     
     // Simple validation
     if (!formData.email || !formData.password) {
@@ -41,12 +50,34 @@ const Login = () => {
       return;
     }
 
-    // In a real app, you would validate credentials against a backend
-    // For this demo, just check if it's a customer email pattern
-    if (formData.email.includes('@customer.com') && formData.password === 'password') {
-      navigate('/dashboard');
-    } else {
-      setError('Invalid credentials. Try email: customer@customer.com, password: password');
+    try {
+      const user = await login(formData.email, formData.password);
+      
+      if (user.isVerified) {
+        navigate('/dashboard');
+      } else {
+        navigate('/pending-verification');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('Invalid email or password. Please try again.');
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setError('');
+    
+    try {
+      const userData = await loginWithGoogle();
+      
+      if (userData.isVerified) {
+        navigate('/dashboard');
+      } else {
+        navigate('/pending-verification');
+      }
+    } catch (error) {
+      console.error('Google sign-in error:', error);
+      setError('Error signing in with Google');
     }
   };
 
@@ -70,13 +101,31 @@ const Login = () => {
             </Typography>
           </Box>
 
-          {error && (
+          {(error || authError) && (
             <Alert severity="error" sx={{ mt: 2 }}>
-              {error}
+              {error || authError}
             </Alert>
           )}
 
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+          <Box sx={{ mt: 2, mb: 3 }}>
+            <Button
+              fullWidth
+              variant="outlined"
+              startIcon={loading ? <CircularProgress size={24} color="inherit" /> : <GoogleIcon />}
+              onClick={handleGoogleSignIn}
+              disabled={loading}
+            >
+              Sign in with Google
+            </Button>
+          </Box>
+
+          <Divider sx={{ mb: 3 }}>
+            <Typography variant="body2" color="text.secondary">
+              OR
+            </Typography>
+          </Divider>
+
+          <Box component="form" onSubmit={handleSubmit} noValidate>
             <TextField
               margin="normal"
               required
@@ -88,6 +137,7 @@ const Login = () => {
               autoFocus
               value={formData.email}
               onChange={handleChange}
+              disabled={loading}
             />
             <TextField
               margin="normal"
@@ -100,6 +150,7 @@ const Login = () => {
               autoComplete="current-password"
               value={formData.password}
               onChange={handleChange}
+              disabled={loading}
             />
             <FormControlLabel
               control={
@@ -108,6 +159,7 @@ const Login = () => {
                   checked={formData.rememberMe}
                   onChange={handleChange}
                   color="primary"
+                  disabled={loading}
                 />
               }
               label="Remember me"
@@ -117,8 +169,9 @@ const Login = () => {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              disabled={loading}
             >
-              Sign In
+              {loading ? 'Signing in...' : 'Sign In'}
             </Button>
             <Grid container>
               <Grid item xs>
@@ -129,13 +182,20 @@ const Login = () => {
                 </Link>
               </Grid>
               <Grid item>
-                <Link to="/admin/login" style={{ textDecoration: 'none' }}>
+                <Link to="/register" style={{ textDecoration: 'none' }}>
                   <Typography variant="body2" color="primary">
-                    Admin Login
+                    Don't have an account? Sign up
                   </Typography>
                 </Link>
               </Grid>
             </Grid>
+            <Box sx={{ mt: 2, textAlign: 'center' }}>
+              <Link to="/admin/login" style={{ textDecoration: 'none' }}>
+                <Typography variant="body2" color="secondary">
+                  Admin Login
+                </Typography>
+              </Link>
+            </Box>
           </Box>
         </Paper>
       </Box>

@@ -1,0 +1,46 @@
+{
+  "success": true,
+  "pendingUsers": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "registrationMethod": "Email",
+      "registeredAt": "2023-10-15 14:30",
+      "status": "pending"
+    },
+    {
+      "id": 2,
+      "name": "Jane Smith",
+      "email": "jane.smith@gmail.com",
+      "registrationMethod": "Google",
+      "registeredAt": "2023-10-16 09:45",
+      "status": "pending"
+    },
+    {
+      "id": 3,
+      "name": "Robert Johnson",
+      "email": "robert@company.com",
+      "registrationMethod": "Email",
+      "registeredAt": "2023-10-16 16:20",
+      "status": "pending"
+    },
+    {
+      "id": 4,
+      "name": "Emily Wilson",
+      "email": "emily.wilson@gmail.com",
+      "registrationMethod": "Google",
+      "registeredAt": "2023-10-17 11:10",
+      "status": "pending"
+    },
+    {
+      "id": 5,
+      "name": "David Brown",
+      "email": "david.brown@example.com",
+      "registrationMethod": "Email",
+      "registeredAt": "2023-10-17 15:35",
+      "status": "pending"
+    }
+  ],
+  "count": 5
+} 

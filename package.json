@@ -7,14 +7,16 @@
   ],
   "scripts": {
     "assets:dev": "yarn workspace @b2b/assets dev",
-    "assets:build": "yarn workspace @b2b/assets build",
+    "assets:build": "yarn workspace @b2b/assets build && cp -R packages/assets/public/* packages/assets/dist/",
     "functions:dev": "yarn workspace @b2b/functions dev",
     "functions:deploy": "yarn workspace @b2b/functions deploy",
     "functions:emulator": "yarn workspace @b2b/functions serve",
     "dev": "concurrently \"yarn assets:dev\" \"yarn functions:dev\"",
     "dev:emulator": "concurrently \"yarn assets:dev\" \"yarn functions:emulator\"",
     "build": "yarn assets:build",
-    "deploy": "yarn build && yarn functions:deploy",
+    "deploy": "yarn build && firebase deploy",
+    "deploy:functions": "firebase deploy --only functions",
+    "deploy:hosting": "yarn build && firebase deploy --only hosting",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
   },

@@ -1,21 +1,28 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import Login from './components/auth/Login';
-import AdminLogin from './components/auth/AdminLogin';
-import Dashboard from './components/dashboard/Dashboard';
-import AdminDashboard from './components/admin/AdminDashboard';
+import getRoutes from './routes';
 
 const App = () => {
+  // For testing purposes, always set role to admin
+  const userRole = 'admin';
+  
+  // Get allowed routes based on user role
+  const allowedRoutes = getRoutes(userRole);
+  
   return (
     <Routes>
-      {/* Public routes */}
+      {/* Redirect root to login */}
       <Route path="/" element={<Navigate to="/login" />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/admin/login" element={<AdminLogin />} />
       
-      {/* Protected routes - in a real app, these would be protected */}
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/admin/dashboard" element={<AdminDashboard />} />
+      {/* Map all allowed routes */}
+      {allowedRoutes.map((route, index) => (
+        <Route
+          key={index}
+          path={route.path}
+          element={route.element}
+          exact={route.exact}
+        />
+      ))}
       
       {/* Fallback route */}
       <Route path="*" element={<Navigate to="/login" />} />
