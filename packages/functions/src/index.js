@@ -16,6 +16,8 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
 import adminRoutes from './routes/adminRoutes.js';
+import creditRoutes from './routes/creditRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
 
 // Get current directory
 const __filename = fileURLToPath(import.meta.url);
@@ -163,6 +165,8 @@ router.get('/', (ctx) => {
 router.use('/auth', authRoutes.routes(), authRoutes.allowedMethods());
 router.use('/user', requireAuth, userRoutes.routes(), userRoutes.allowedMethods());
 router.use('/admin', requireAuth, requireAdmin, adminRoutes.routes(), adminRoutes.allowedMethods());
+router.use('/credit', requireAuth, creditRoutes.routes(), creditRoutes.allowedMethods());
+router.use('/order', requireAuth, orderRoutes.routes(), orderRoutes.allowedMethods());
 
 // Add a basic health check route
 router.get('/health', (ctx) => {
@@ -198,49 +202,32 @@ export const api = functions.https.onRequest((req, res) => {
 });
 
 // Export user management functions
-export const createUserAccount = functions.auth.user().onCreate(async (user) => {
+export const createUser = functions.auth.user().onCreate(async (user) => {
   try {
-    // Create user profile in Firestore
+    // Set default custom claims for new users
+    await admin.auth().setCustomUserClaims(user.uid, { role: 'user' });
+    
+    // Create user document in Firestore
     await admin.firestore().collection('users').doc(user.uid).set({
       email: user.email,
       displayName: user.displayName || '',
       photoURL: user.photoURL || '',
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      isVerified: false, // User needs verification
+      phoneNumber: user.phoneNumber || '',
       role: 'user',
-      authProvider: user.providerData[0]?.providerId || 'email'
+      isVerified: false,
+      createdAt: admin.firestore.FieldValue.serverTimestamp()
     });
-
-    console.log(`User profile created for ${user.uid}`);
-    return null;
+    
+    console.log(`User ${user.uid} created successfully with default role`);
   } catch (error) {
-    console.error('Error creating user profile:', error);
-    return null;
+    console.error('Error creating user document:', error);
   }
 });
 
-// Clean up when user is deleted
-export const deleteUserData = functions.auth.user().onDelete(async (user) => {
-  try {
-    // Delete user profile from Firestore
-    await admin.firestore().collection('users').doc(user.uid).delete();
-    console.log(`User profile deleted for ${user.uid}`);
-    return null;
-  } catch (error) {
-    console.error('Error deleting user profile:', error);
-    return null;
-  }
-});
-
-// Phát triển địa phương - chỉ bắt đầu máy chủ khi không trong sản xuất
-// và khi tệp được chạy trực tiếp (không thông qua yêu cầu của Firebase)
-if (process.env.NODE_ENV !== 'production' && import.meta.url.endsWith(process.argv[1])) {
-  const PORT = process.env.PORT || 5001;
-  
-  // Start server
+// Start server if not in Firebase Functions environment
+if (process.env.NODE_ENV !== 'production') {
   app.listen(PORT, () => {
-    console.log(`Development server running at http://localhost:${PORT}`);
-    console.log(`API base URL: http://localhost:${PORT}${API_PREFIX}`);
-    console.log(`Health check: http://localhost:${PORT}${API_PREFIX}/health`);
+    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`API available at http://localhost:${PORT}${API_PREFIX}`);
   });
 } 
