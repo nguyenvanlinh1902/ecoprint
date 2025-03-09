@@ -5,42 +5,37 @@ This document outlines the optimized organization of the @assets package.
 ## Directory Structure (Optimized)
 
 ```
-src/
-├── components/          # Reusable components
-│   ├── common/          # Shared components used across the app
-│   ├── ui/              # Basic UI components
-│   └── shared/          # Shared layout components
-├── features/            # Feature-specific components and logic
-│   ├── admin/           # Admin-specific features
-│   │   ├── products/    # Product management 
-│   │   ├── users/       # User management
-│   │   ├── orders/      # Order management
-│   │   ├── settings/    # Admin settings
-│   │   └── reports/     # Admin reports
-│   ├── user/            # User-specific features
-│   │   ├── profile/     # User profile
-│   │   ├── orders/      # User orders
-│   │   ├── products/    # Product browsing
-│   │   └── transactions/# User transactions
-│   └── auth/            # Authentication features
-├── pages/               # Page components  
-├── hooks/               # Custom React hooks
-│   ├── api/             # API-related hooks
-│   └── ui/              # UI and state management hooks
-├── contexts/            # React contexts
-├── store/               # State management
-│   ├── actions/         # Redux actions
-│   ├── reducers/        # Redux reducers
-│   └── types/           # Type definitions
-├── services/            # API services and external integrations
-├── routes/              # Route configurations
-│   └── utils/           # Route utility functions
-├── layouts/             # Layout wrapper components
-├── utils/               # Utility functions and helpers
-├── styles/              # Global styles and theme configurations
-├── App.js               # Main application component
-├── main.js              # Application entry point
-├── firebase.js          # Firebase configuration
+assets/
+├── src/
+│   ├── actions/            # Redux actions
+│   ├── components/         # Reusable UI components
+│   ├── config/             # Frontend configuration
+│   ├── const/              # Constants and enums
+│   ├── contexts/           # React context providers
+│   ├── helpers/            # Utility functions
+│   ├── hooks/              # Custom React hooks
+│   ├── layouts/            # Page layout components
+│   ├── loadables/          # Code splitting components
+│   ├── locale/             # Internationalization
+│   ├── pages/              # Page components
+│   ├── reducers/           # Redux reducers
+│   ├── resources/          # Static resources and assets
+│   ├── routes/             # Application routing
+│   ├── services/           # API and external services
+│   ├── styles/             # Global styles and themes
+│   ├── App.js              # Main application component
+│   ├── embed.js            # Embedded app entry point
+│   ├── helpers.js          # General helper functions
+│   ├── history.js          # Browser history configuration
+│   ├── main.js             # Main application entry point
+│   ├── serviceWorker.js    # Progressive Web App service worker
+│   └── standalone.js       # Standalone app entry point
+├── index.html              # Main HTML template
+├── embed.html              # Embedded app HTML template
+├── standalone.html         # Standalone app HTML template
+├── vite.config.js          # Vite bundler configuration
+├── package.json            # Frontend dependencies
+└── various config files    # (.babelrc, .eslintrc.js, etc.)
 └── theme.js             # Material UI theme configuration
 ```
 

@@ -4,6 +4,8 @@
 import orderService from '../services/orderService.js';
 import productService from '../services/productService.js';
 import orderModel from '../models/orderModel.js';
+import creditService from '../services/creditService.js';
+import productModel from '../models/productModel.js';
 
 const orderController = {
   /**
@@ -26,6 +28,22 @@ const orderController = {
       orderData.customerEmail = user.email;
       orderData.customerPhone = user.phone;
       
+      // Đảm bảo phương thức thanh toán là credit
+      orderData.paymentMethod = orderModel.PAYMENT_METHODS.CREDIT;
+      
+      // Kiểm tra số dư trước khi xử lý đơn hàng
+      const estimatedTotal = await orderService.estimateOrderTotal(orderData);
+      const hasEnoughCredit = await creditService.checkBalance(user.uid, estimatedTotal);
+      
+      if (!hasEnoughCredit) {
+        ctx.status = 400;
+        ctx.body = {
+          success: false,
+          message: 'Số dư credit không đủ để thanh toán. Vui lòng nạp thêm credit.'
+        };
+        return;
+      }
+      
       // Kiểm tra và xử lý các mặt hàng có phí bổ sung
       if (orderData.items && Array.isArray(orderData.items)) {
         for (let i = 0; i < orderData.items.length; i++) {
@@ -33,6 +51,16 @@ const orderController = {
           
           // Lấy thông tin sản phẩm
           const product = await productService.getProduct(item.id);
+          
+          // Kiểm tra xem sản phẩm có yêu cầu phí bổ sung không
+          if (productModel.requiresAdditionalFees(item.type) && (!item.customOptions || Object.keys(item.customOptions).length === 0)) {
+            ctx.status = 400;
+            ctx.body = {
+              success: false,
+              message: `Thiếu thông tin tùy chỉnh cho sản phẩm "${item.name}"`
+            };
+            return;
+          }
           
           // Tính toán phí bổ sung cho sản phẩm
           const appliedFees = await orderService.calculateAdditionalFees(
@@ -261,6 +289,19 @@ const orderController = {
         return;
       }
       
+      // Kiểm tra xem sản phẩm có yêu cầu phí bổ sung không
+      const requiresFees = productModel.requiresAdditionalFees(product.type);
+      
+      if (requiresFees && (!productOptions || Object.keys(productOptions).length === 0)) {
+        ctx.status = 400;
+        ctx.body = { 
+          success: false, 
+          message: 'Sản phẩm này yêu cầu thông tin tùy chỉnh để tính phí',
+          requiresCustomOptions: true
+        };
+        return;
+      }
+      
       // Tính toán phí bổ sung
       const appliedFees = await orderService.calculateAdditionalFees(product, productOptions);
       
@@ -277,12 +318,77 @@ const orderController = {
           fees: appliedFees,
           totalFees,
           basePrice: product.price,
-          totalPrice: product.price + totalFees
+          totalPrice: product.price + totalFees,
+          requiresCustomOptions: requiresFees
         }
       };
     } catch (error) {
       ctx.status = 500;
       ctx.body = { success: false, message: error.message };
+    }
+  },
+  
+  /**
+   * Kiểm tra đủ số dư để thanh toán đơn hàng
+   */
+  checkOrderPayment: async (ctx) => {
+    try {
+      const orderData = ctx.request.body;
+      const { user } = ctx.state;
+      
+      if (!user) {
+        ctx.status = 401;
+        ctx.body = { success: false, message: 'Yêu cầu đăng nhập' };
+        return;
+      }
+      
+      // Tính toán ước tính tổng tiền đơn hàng
+      const estimatedTotal = await orderService.estimateOrderTotal(orderData);
+      
+      // Kiểm tra số dư
+      const hasEnoughCredit = await creditService.checkBalance(user.uid, estimatedTotal);
+      
+      ctx.status = 200;
+      ctx.body = {
+        success: true,
+        data: {
+          hasEnoughCredit,
+          estimatedTotal,
+          paymentMethod: orderModel.PAYMENT_METHODS.CREDIT
+        }
+      };
+    } catch (error) {
+      ctx.status = 500;
+      ctx.body = { success: false, message: error.message };
+    }
+  },
+
+  /**
+   * Tính toán giá đơn hàng trước khi tạo
+   */
+  calculateOrderPrice: async (ctx) => {
+    try {
+      const orderData = ctx.request.body;
+      const { user } = ctx.state;
+      
+      if (!user) {
+        ctx.status = 401;
+        ctx.body = { success: false, message: 'Yêu cầu đăng nhập' };
+        return;
+      }
+      
+      // Tính toán giá đơn hàng
+      const priceDetails = await orderService.calculateOrderPrice(orderData);
+      
+      ctx.status = 200;
+      ctx.body = {
+        success: true,
+        priceDetails: priceDetails
+      };
+    } catch (error) {
+      console.error('Error calculating order price:', error);
+      ctx.status = 500;
+      ctx.body = { success: false, message: 'Lỗi server khi tính giá đơn hàng' };
     }
   }
 };

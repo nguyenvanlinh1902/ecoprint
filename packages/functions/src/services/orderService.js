@@ -16,6 +16,9 @@ const orderService = {
    */
   createOrder: async (orderData) => {
     try {
+      // Đảm bảo phương thức thanh toán là credit
+      orderData.paymentMethod = orderModel.PAYMENT_METHODS.CREDIT;
+      
       // Validate đơn hàng
       const { isValid, errors } = orderModel.validateOrder(orderData);
       if (!isValid) {
@@ -44,28 +47,25 @@ const orderService = {
         }
       }
       
-      // Kiểm tra phương thức thanh toán và xử lý
-      if (orderData.paymentMethod === orderModel.PAYMENT_METHODS.CREDIT) {
-        // Kiểm tra số dư tài khoản credit
-        const hasEnoughBalance = await creditService.checkBalance(orderData.customerId, total);
-        if (!hasEnoughBalance) {
-          throw new Error('Số dư tài khoản không đủ để thanh toán đơn hàng');
-        }
-        
-        // Tạo giao dịch thanh toán từ credit
-        await creditService.createTransaction({
-          customerId: orderData.customerId,
-          customer: {
-            name: orderData.customerName,
-            email: orderData.customerEmail
-          },
-          type: transactionModel.TRANSACTION_TYPES.PURCHASE,
-          amount: total,
-          reference: `Order ${orderId}`,
-          orderId: orderId,
-          status: transactionModel.TRANSACTION_STATUS.APPROVED
-        });
+      // Kiểm tra số dư tài khoản credit
+      const hasEnoughBalance = await creditService.checkBalance(orderData.customerId, total);
+      if (!hasEnoughBalance) {
+        throw new Error('Số dư tài khoản không đủ để thanh toán đơn hàng');
       }
+      
+      // Tạo giao dịch thanh toán từ credit
+      await creditService.createTransaction({
+        customerId: orderData.customerId,
+        customer: {
+          name: orderData.customerName,
+          email: orderData.customerEmail
+        },
+        type: transactionModel.TRANSACTION_TYPES.PURCHASE,
+        amount: total,
+        reference: `Order ${orderId}`,
+        orderId: orderId,
+        status: transactionModel.TRANSACTION_STATUS.APPROVED
+      });
       
       // Tạo đơn hàng mới
       const newOrder = {
@@ -84,6 +84,43 @@ const orderService = {
       return newOrder;
     } catch (error) {
       console.error('Error creating order:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Ước tính tổng tiền đơn hàng trước khi tạo
+   * @param {Object} orderData - Dữ liệu đơn hàng
+   * @returns {Promise<number>} Tổng tiền ước tính
+   */
+  estimateOrderTotal: async (orderData) => {
+    try {
+      let subtotal = 0;
+      
+      // Tính toán tổng tiền của các mặt hàng
+      if (orderData.items && Array.isArray(orderData.items)) {
+        for (const item of orderData.items) {
+          if (item.appliedFees && Array.isArray(item.appliedFees)) {
+            const itemTotal = orderModel.calculateItemTotal(item);
+            subtotal += itemTotal;
+          } else {
+            // Nếu chưa có phí bổ sung, tính dựa trên giá cơ bản
+            subtotal += item.price * item.quantity;
+          }
+        }
+      }
+      
+      // Tính tổng tiền với phí bổ sung (nếu có)
+      let total = subtotal;
+      if (orderData.additionalCharges && Array.isArray(orderData.additionalCharges)) {
+        for (const charge of orderData.additionalCharges) {
+          total += charge.amount;
+        }
+      }
+      
+      return total;
+    } catch (error) {
+      console.error('Error estimating order total:', error);
       throw error;
     }
   },
@@ -259,6 +296,17 @@ const orderService = {
         });
       }
       
+      // Phí bắt buộc cho dịch vụ tùy chỉnh và in ấn
+      const isServiceProduct = 
+        product.type === productModel.PRODUCT_TYPES.CUSTOM || 
+        product.type === productModel.PRODUCT_TYPES.DTF_PRINTING || 
+        product.type === productModel.PRODUCT_TYPES.DTG_PRINTING;
+      
+      if (isServiceProduct) {
+        // Thêm phí bắt buộc cho dịch vụ
+        // ...
+      }
+      
       return appliedFees;
     } catch (error) {
       console.error('Error calculating additional fees:', error);
@@ -347,6 +395,158 @@ const orderService = {
       console.error('Error getting all orders:', error);
       throw error;
     }
+  },
+
+  /**
+   * Tính toán chi tiết giá đơn hàng
+   * @param {Object} orderData - Dữ liệu đơn hàng
+   * @returns {Object} Chi tiết giá
+   */
+  calculateOrderPrice: async (orderData) => {
+    const { lineItems } = orderData;
+    
+    let subtotal = 0;
+    let total = 0;
+    let shippingFee = 0;
+    
+    // Chi tiết các sản phẩm
+    const itemDetails = [];
+    
+    // Xử lý từng sản phẩm
+    for (const item of lineItems) {
+      const { productId, variantId, quantity, customizations = [] } = item;
+      
+      // Lấy thông tin sản phẩm
+      const productDoc = await db.collection('products').doc(productId).get();
+      if (!productDoc.exists) {
+        throw new Error(`Sản phẩm không tồn tại: ${productId}`);
+      }
+      
+      const product = productDoc.data();
+      
+      // Lấy thông tin variant
+      let variant = null;
+      let variantPrice = 0;
+      
+      if (variantId) {
+        const variantDoc = await db.collection('products')
+          .doc(productId)
+          .collection('variants')
+          .doc(variantId)
+          .get();
+        
+        if (variantDoc.exists) {
+          variant = variantDoc.data();
+          variantPrice = variant.price;
+        }
+      } else {
+        // Lấy variant mặc định nếu có
+        const variantsSnapshot = await db.collection('products')
+          .doc(productId)
+          .collection('variants')
+          .limit(1)
+          .get();
+        
+        if (!variantsSnapshot.empty) {
+          variant = variantsSnapshot.docs[0].data();
+          variantPrice = variant.price;
+        }
+      }
+      
+      // Tính giá cơ bản cho sản phẩm
+      const basePrice = variantPrice > 0 ? variantPrice : (product.price || 0);
+      const itemSubtotal = basePrice * quantity;
+      
+      // Tính phí bổ sung cho các customization
+      let customizationFees = 0;
+      const customizationDetails = [];
+      
+      for (const customization of customizations) {
+        const { type, location } = customization;
+        
+        // Lấy giá cho loại customization và vị trí
+        const feeDoc = await db.collection('pricingRules')
+          .where('type', '==', type)
+          .where('location', '==', location)
+          .limit(1)
+          .get();
+        
+        let fee = 0;
+        
+        if (!feeDoc.empty) {
+          const feeData = feeDoc.docs[0].data();
+          fee = feeData.price || 0;
+        } else {
+          // Giá mặc định dựa trên loại và vị trí
+          if (type === 'embroidery') {
+            if (location === 'large_center') fee = 4.00;
+            else if (location === 'left_sleeve' || location === 'right_sleeve') fee = 1.00;
+            else if (location === 'back_location') fee = 4.00;
+            else if (location === 'special_location') fee = 4.00;
+          } else if (type === 'dtg' || type === 'dtf') {
+            fee = 1.00;
+          }
+        }
+        
+        customizationFees += fee;
+        customizationDetails.push({
+          type,
+          location,
+          fee
+        });
+      }
+      
+      // Phí xử lý file
+      let processingFee = 0;
+      if (customizations.length > 0) {
+        const hasDTG = customizations.some(c => c.type === 'dtg');
+        const hasDTF = customizations.some(c => c.type === 'dtf');
+        const hasEmbroidery = customizations.some(c => c.type === 'embroidery');
+        
+        if (hasEmbroidery) processingFee += 3.00; // EMB file
+        if (hasDTG) processingFee += 1.00; // DTG Printing
+        if (hasDTF) processingFee += 2.00; // Printing file
+      }
+      
+      // Tổng phí cho sản phẩm
+      const itemTotal = itemSubtotal + customizationFees + processingFee;
+      
+      // Thêm vào danh sách chi tiết
+      itemDetails.push({
+        productId,
+        productName: product.title,
+        variantId: variant ? variant.id : null,
+        variantName: variant ? `${variant.option1Name}: ${variant.option1Value}` : null,
+        quantity,
+        basePrice,
+        itemSubtotal,
+        customizationFees,
+        processingFee,
+        customizationDetails,
+        itemTotal
+      });
+      
+      // Cộng vào tổng
+      subtotal += itemTotal;
+    }
+    
+    // Tính phí vận chuyển
+    if (orderData.hasPhysicalProducts && orderData.shippingAddress) {
+      // Giả sử phí vận chuyển cố định
+      shippingFee = 5.00;
+      
+      // Trong thực tế, bạn có thể tính phí vận chuyển dựa trên địa chỉ, trọng lượng, v.v.
+    }
+    
+    // Tổng giá
+    total = subtotal + shippingFee;
+    
+    return {
+      subtotal,
+      shippingFee,
+      total,
+      itemDetails
+    };
   }
 };
 

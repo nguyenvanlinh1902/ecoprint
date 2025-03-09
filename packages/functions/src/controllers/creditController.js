@@ -67,6 +67,45 @@ const creditController = {
   },
 
   /**
+   * Kiểm tra số dư credit
+   */
+  checkBalance: async (ctx) => {
+    try {
+      const { amount } = ctx.query;
+      const { user } = ctx.state;
+      
+      if (!user) {
+        ctx.status = 401;
+        ctx.body = { success: false, message: 'Yêu cầu đăng nhập' };
+        return;
+      }
+      
+      if (!amount || isNaN(parseFloat(amount))) {
+        ctx.status = 400;
+        ctx.body = { success: false, message: 'Số tiền không hợp lệ' };
+        return;
+      }
+      
+      const hasEnoughBalance = await creditService.checkBalance(
+        user.uid,
+        parseFloat(amount)
+      );
+      
+      ctx.status = 200;
+      ctx.body = {
+        success: true,
+        data: {
+          hasEnoughBalance,
+          amount: parseFloat(amount)
+        }
+      };
+    } catch (error) {
+      ctx.status = 500;
+      ctx.body = { success: false, message: error.message };
+    }
+  },
+
+  /**
    * Lấy lịch sử giao dịch
    */
   getTransactionHistory: async (ctx) => {

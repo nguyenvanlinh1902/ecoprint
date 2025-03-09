@@ -10,6 +10,7 @@ import {
   Inventory as ProductsIcon
 } from '@mui/icons-material';
 import { SidebarLayout, CollapsibleSidebar, CollapsibleAppBar } from '../components/shared';
+import { useAuth } from '../hooks/api';
 
 const DRAWER_WIDTH = 240;
 const DRAWER_COLLAPSED_WIDTH = 64;
@@ -20,6 +21,7 @@ const DRAWER_COLLAPSED_WIDTH = 64;
 const UserLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useAuth();
   const [activeSection, setActiveSection] = useState(() => {
     const path = location.pathname;
     if (path.includes('/user/profile')) return 1;
@@ -42,9 +44,8 @@ const UserLayout = () => {
   }, [location.pathname]);
   
   const handleLogout = () => {
-    // Implement logout logic
-    localStorage.removeItem('user_token');
-    localStorage.removeItem('user');
+    // Implement logout logic using useAuth hook
+    logout();
     navigate('/login');
   };
   

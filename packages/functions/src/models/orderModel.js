@@ -9,10 +9,7 @@ import productModel from './productModel.js';
  * @enum {string}
  */
 const PAYMENT_METHODS = {
-  CREDIT: 'credit',              // Thanh toán bằng credit trong tài khoản
-  CREDIT_CARD: 'credit_card',    // Thẻ tín dụng
-  BANK_TRANSFER: 'bank_transfer',// Chuyển khoản ngân hàng
-  CASH_ON_DELIVERY: 'cod'        // Thanh toán khi nhận hàng
+  CREDIT: 'credit',              // Chỉ thanh toán bằng credit trong tài khoản
 };
 
 /**
@@ -39,11 +36,11 @@ const ORDER_STATUS = {
  * @property {string} date - Ngày tạo đơn hàng
  * @property {number} subtotal - Tổng tiền hàng (chưa bao gồm phí)
  * @property {number} total - Tổng tiền thanh toán (đã bao gồm phí)
- * @property {string} paymentMethod - Phương thức thanh toán (từ enum PAYMENT_METHODS)
+ * @property {string} paymentMethod - Phương thức thanh toán (luôn là 'credit')
  * @property {string} status - Trạng thái đơn hàng (từ enum ORDER_STATUS)
  * @property {OrderItem[]} items - Danh sách các mặt hàng trong đơn hàng
  * @property {AdditionalCharge[]} [additionalCharges] - Các khoản phí bổ sung
- * @property {Address} [shippingAddress] - Địa chỉ giao hàng
+ * @property {Address} [shippingAddress] - Địa chỉ giao hàng (bắt buộc cho sản phẩm vật lý)
  * @property {string} [trackingNumber] - Mã vận đơn
  * @property {string} [note] - Ghi chú cho đơn hàng
  */
@@ -53,11 +50,11 @@ const ORDER_STATUS = {
  * @typedef {Object} OrderItem
  * @property {string} id - ID của sản phẩm
  * @property {string} name - Tên sản phẩm
- * @property {number} price - Giá sản phẩm
+ * @property {number} price - Giá cơ bản sản phẩm
  * @property {number} quantity - Số lượng
  * @property {string} type - Loại sản phẩm (từ enum PRODUCT_TYPES)
  * @property {AppliedFee[]} [appliedFees] - Các khoản phí bổ sung đã áp dụng
- * @property {Object} [customOptions] - Tùy chọn tùy chỉnh cho sản phẩm (nếu là loại tùy chỉnh hoặc in ấn)
+ * @property {Object} [customOptions] - Tùy chọn tùy chỉnh cho sản phẩm (bắt buộc cho CUSTOM, DTF_PRINTING, DTG_PRINTING)
  */
 
 /**

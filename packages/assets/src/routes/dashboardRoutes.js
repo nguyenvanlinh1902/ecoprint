@@ -8,20 +8,22 @@ import ProductCatalog from '../components/dashboard/ProductCatalog';
 import UserOrders from '../components/dashboard/UserOrders';
 
 /**
- * User dashboard routes configuration
+ * Dashboard routes configuration
+ * Note: These routes use the /dashboard/* pattern only
+ * User-specific routes (/user/*) are now defined in userRoutes.js
  */
 const dashboardRoutes = [
   {
-    path: "/dashboard/*",
+    path: "/dashboard",
     element: <UserLayout />,
     roles: ['user', 'admin'],
     children: [
-      { path: "", element: <Dashboard /> },
-      { path: "products", element: <ProductCatalog /> },
-      { path: "profile", element: <UserProfile /> },
-      { path: "transactions", element: <CustomerTransactions /> },
-      { path: "orders", element: <UserOrders /> },
-      { path: "settings", element: <UserSettings /> }
+      { path: "", element: <Dashboard />, roles: ['user', 'admin'] },
+      { path: "products", element: <ProductCatalog />, roles: ['user', 'admin'] },
+      { path: "profile", element: <UserProfile />, roles: ['user', 'admin'] },
+      { path: "transactions", element: <CustomerTransactions />, roles: ['user', 'admin'] },
+      { path: "orders", element: <UserOrders />, roles: ['user', 'admin'] },
+      { path: "settings", element: <UserSettings />, roles: ['user', 'admin'] }
     ]
   }
 ];

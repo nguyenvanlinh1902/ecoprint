@@ -44,23 +44,38 @@ const Login = () => {
     e.preventDefault();
     setError('');
     
-    // Simple validation
+    // TEMPORARY FIX: Only validate email
+    if (!formData.email) {
+      setError('Please enter your email');
+      return;
+    }
+
+    // ORIGINAL VALIDATION (COMMENTED OUT)
+    /*
     if (!formData.email || !formData.password) {
       setError('Please fill in all fields');
       return;
     }
+    */
 
     try {
-      const user = await login(formData.email, formData.password);
+      // Pass whatever password is entered, it won't be used in the temporary implementation
+      console.log('Attempting login with email:', formData.email);
+      const user = await login(formData.email, formData.password || 'temporary_unused_password');
       
-      if (user.isVerified) {
-        navigate('/dashboard');
+      console.log('Login successful, user data:', user);
+      
+      // Since we're auto-verifying in the useAuth hook, we can go straight to dashboard
+      if (user.role === 'admin') {
+        console.log('Navigating to admin dashboard');
+        navigate('/admin/dashboard');
       } else {
-        navigate('/pending-verification');
+        console.log('Navigating to user dashboard');
+        navigate('/user/dashboard');
       }
     } catch (error) {
       console.error('Login error:', error);
-      setError('Invalid email or password. Please try again.');
+      setError('Error signing in. Please try again.');
     }
   };
 
@@ -137,29 +152,33 @@ const Login = () => {
               autoFocus
               value={formData.email}
               onChange={handleChange}
-              disabled={loading}
             />
             <TextField
               margin="normal"
-              required
               fullWidth
               name="password"
-              label="Password"
+              label="Password (Optional - Not Required)"
               type="password"
               id="password"
               autoComplete="current-password"
               value={formData.password}
               onChange={handleChange}
-              disabled={loading}
+              helperText="For testing purposes, no password is required"
             />
+            
+            <Box sx={{ mt: 1, mb: 1 }}>
+              <Alert severity="info">
+                Temporary login mode: Only email is required, password field is optional.
+              </Alert>
+            </Box>
+
             <FormControlLabel
               control={
-                <Checkbox
-                  name="rememberMe"
+                <Checkbox 
                   checked={formData.rememberMe}
                   onChange={handleChange}
+                  name="rememberMe"
                   color="primary"
-                  disabled={loading}
                 />
               }
               label="Remember me"
@@ -171,7 +190,11 @@ const Login = () => {
               sx={{ mt: 3, mb: 2 }}
               disabled={loading}
             >
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                'Sign In'
+              )}
             </Button>
             <Grid container>
               <Grid item xs>

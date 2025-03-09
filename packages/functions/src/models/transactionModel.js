@@ -39,8 +39,8 @@ const TRANSACTION_STATUS = {
  * @property {string} reference - Mã tham chiếu
  * @property {string} [orderId] - ID đơn hàng liên quan (nếu có)
  * @property {string} status - Trạng thái giao dịch (từ enum TRANSACTION_STATUS)
- * @property {string} [paymentMethodId] - ID phương thức thanh toán
- * @property {string} [receiptUrl] - URL hình ảnh biên lai
+ * @property {string} [paymentMethodId] - ID phương thức thanh toán (chỉ cho DEPOSIT)
+ * @property {string} [receiptUrl] - URL hình ảnh biên lai (chỉ cho DEPOSIT)
  * @property {string} [comment] - Ghi chú về giao dịch
  * @property {Date} createdAt - Thời gian tạo giao dịch
  * @property {Date} [updatedAt] - Thời gian cập nhật gần nhất

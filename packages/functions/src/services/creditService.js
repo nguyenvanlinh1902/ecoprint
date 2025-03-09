@@ -336,6 +336,95 @@ const creditService = {
       console.error('Error getting transaction history:', error);
       throw error;
     }
+  },
+
+  /**
+   * Lấy tất cả giao dịch (dành cho admin)
+   * @param {Object} query - Tham số truy vấn
+   * @param {number} limit - Số lượng giao dịch tối đa
+   * @param {number} offset - Vị trí bắt đầu
+   * @returns {Promise<Object>} Kết quả tìm kiếm giao dịch
+   */
+  getAllTransactions: async (query = {}, limit = 20, offset = 0) => {
+    try {
+      let dbQuery = db.collection('transactions');
+      
+      // Áp dụng các bộ lọc
+      if (query.status) {
+        dbQuery = dbQuery.where('status', '==', query.status);
+      }
+      
+      if (query.type) {
+        dbQuery = dbQuery.where('type', '==', query.type);
+      }
+      
+      // Lọc theo ngày
+      if (query.dateRange) {
+        if (query.dateRange.fromDate) {
+          dbQuery = dbQuery.where('createdAt', '>=', query.dateRange.fromDate);
+        }
+        
+        if (query.dateRange.toDate) {
+          dbQuery = dbQuery.where('createdAt', '<=', query.dateRange.toDate);
+        }
+      }
+      
+      // Sắp xếp theo thời gian tạo
+      dbQuery = dbQuery.orderBy('createdAt', 'desc');
+      
+      // Lấy tổng số giao dịch (cho phân trang)
+      const countSnapshot = await dbQuery.get();
+      const totalTransactions = countSnapshot.size;
+      
+      // Áp dụng phân trang
+      dbQuery = dbQuery.limit(limit).offset(offset);
+      
+      // Thực hiện truy vấn
+      const transactionsSnapshot = await dbQuery.get();
+      
+      const transactions = [];
+      transactionsSnapshot.forEach((doc) => {
+        transactions.push({
+          id: doc.id,
+          ...doc.data()
+        });
+      });
+      
+      return {
+        transactions,
+        total: totalTransactions,
+        limit,
+        offset
+      };
+    } catch (error) {
+      console.error('Error getting all transactions:', error);
+      throw error;
+    }
+  },
+  
+  /**
+   * Lấy danh sách phương thức thanh toán
+   * @returns {Promise<Array>} Danh sách phương thức thanh toán
+   */
+  getPaymentMethods: async () => {
+    try {
+      const paymentMethodsSnapshot = await db.collection('paymentMethods')
+        .where('active', '==', true)
+        .get();
+      
+      const paymentMethods = [];
+      paymentMethodsSnapshot.forEach((doc) => {
+        paymentMethods.push({
+          id: doc.id,
+          ...doc.data()
+        });
+      });
+      
+      return paymentMethods;
+    } catch (error) {
+      console.error('Error getting payment methods:', error);
+      throw error;
+    }
   }
 };
 

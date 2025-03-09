@@ -1,10 +1,14 @@
 import Router from 'koa-router';
 import orderController from '../controllers/orderController.js';
+import { validateCreateOrder } from '../validators/orderValidator.js';
 
 const router = new Router();
 
 // Tạo đơn hàng mới
-router.post('/orders', orderController.createOrder);
+router.post('/orders', validateCreateOrder, orderController.createOrder);
+
+// Tính toán giá đơn hàng trước khi tạo
+router.post('/orders/calculate', orderController.calculateOrderPrice);
 
 // Lấy thông tin đơn hàng
 router.get('/orders/:orderId', orderController.getOrder);

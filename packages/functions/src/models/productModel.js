@@ -23,8 +23,8 @@ const PRODUCT_TYPES = {
  * @property {string} category - Danh mục sản phẩm
  * @property {number} price - Giá cơ bản của sản phẩm
  * @property {string} type - Loại sản phẩm (từ enum PRODUCT_TYPES)
- * @property {boolean} inStock - Tình trạng còn hàng
- * @property {number} stockQuantity - Số lượng tồn kho
+ * @property {boolean} inStock - Tình trạng còn hàng (chỉ áp dụng cho sản phẩm có sẵn)
+ * @property {number} stockQuantity - Số lượng tồn kho (chỉ áp dụng cho sản phẩm có sẵn)
  * @property {boolean} eco - Sản phẩm thân thiện môi trường
  * @property {string} [image] - URL hình ảnh sản phẩm
  * @property {number} [rating] - Đánh giá sản phẩm (1-5)

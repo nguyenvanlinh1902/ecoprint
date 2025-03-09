@@ -7,9 +7,13 @@ import {
   Inventory as InventoryIcon,
   Settings as SettingsIcon,
   ShoppingCart as OrdersIcon,
-  Payment as PaymentIcon
+  Payment as PaymentIcon,
+  Person as ProfileIcon,
+  AccountBalance as TransactionIcon,
+  Inventory as ProductsIcon
 } from '@mui/icons-material';
 import { SidebarLayout, CollapsibleSidebar, CollapsibleAppBar } from '../components/shared';
+import { useAuth } from '../hooks/api';
 
 const DRAWER_WIDTH = 240;
 const DRAWER_COLLAPSED_WIDTH = 64;
@@ -20,6 +24,7 @@ const DRAWER_COLLAPSED_WIDTH = 64;
 const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useAuth();
   const [activeSection, setActiveSection] = useState(() => {
     const path = location.pathname;
     if (path.includes('/admin/customers')) return 1;
@@ -42,9 +47,8 @@ const AdminLayout = () => {
   }, [location.pathname]);
   
   const handleLogout = () => {
-    // Implement logout logic
-    localStorage.removeItem('admin_token');
-    localStorage.removeItem('admin');
+    // Implement logout logic using useAuth hook
+    logout();
     navigate('/login');
   };
   
